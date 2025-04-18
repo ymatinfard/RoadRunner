@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.android.hilt)
+    alias(libs.plugins.spotless)
 }
 
 android {
@@ -25,7 +26,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -38,6 +39,30 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+}
+
+spotless {
+    // Kotlin formatting
+    kotlin {
+        target("**/*.kt")
+        targetExclude("**/build/**", "**/generated/**")
+        ktlint("1.5.0")
+        trimTrailingWhitespace()
+    }
+
+    // Gradle files formatting
+    kotlinGradle {
+        target("**/*.gradle.kts")
+        ktlint()
+    }
+
+    // Optional: XML formatting (for Android resources)
+    format("xml") {
+        target("**/res/**/*.xml")
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
     }
 }
 
