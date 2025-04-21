@@ -1,7 +1,7 @@
 package com.matin.roadrunner.feature.mainqeust.model
 
 data class GroundCellUiModel(
-    val cellId: Long,
-    val hasRunner: Boolean = false,
-    val driver: DriverUiModel? = null,
+    var cellId: Long = 0,
+    var hasRunner: Boolean = false,
+    var driver: DriverUiModel? = null,
 )

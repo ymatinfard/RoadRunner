@@ -4,4 +4,6 @@ data class DriverUiModel(
     val id: String,
     val name: String,
     val point: Int,
+    val x: Int,
+    val y: Int,
 )

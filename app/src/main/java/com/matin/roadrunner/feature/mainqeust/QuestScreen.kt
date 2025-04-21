@@ -14,35 +14,40 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.roadrunner.core.designsystem.RoadRunnerTheme
 import com.matin.roadrunner.feature.mainqeust.model.DriverUiModel
 import com.matin.roadrunner.feature.mainqeust.model.GroundCellUiModel
 
 @Composable
-fun QuestScreen() {
-
+fun QuestScreen(viewModel: QuestScreenViewModel = hiltViewModel<QuestScreenViewModel>()) {
+    val groundCells by viewModel.playGroundCellsState.collectAsStateWithLifecycle()
+    QuestScreenContent(cells = groundCells.flatten(), onCellClick = {})
 }
 
 @Composable
 fun QuestScreenContent(
-    groundCells: List<GroundCellUiModel>,
+    cells: List<GroundCellUiModel>,
     onCellClick: (GroundCellUiModel) -> Unit,
 ) {
     Surface(modifier = Modifier.fillMaxSize()) {
-        val cellModifier = Modifier
-            .aspectRatio(1f)
-            .background(color = MaterialTheme.colorScheme.primary)
-            .border(BorderStroke(1.dp, color = MaterialTheme.colorScheme.tertiary))
+        val cellModifier =
+            Modifier
+                .aspectRatio(1f)
+                .background(color = MaterialTheme.colorScheme.primary)
+                .border(BorderStroke(1.dp, color = MaterialTheme.colorScheme.tertiary))
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(10),
         ) {
             items(
-                groundCells,
-                key = { it.cellId },
+                cells,
+                key = { cell -> cell.cellId },
             ) { cell ->
                 GroundCell(cellModifier, cell, onCellClick)
             }
@@ -57,14 +62,13 @@ fun GroundCell(
     onCellClick: (GroundCellUiModel) -> Unit,
 ) {
     Box(
-        modifier = modifier
-            .clickable { onCellClick(cell) },
-
-        ) {
-        if (cell.hasRunner) {
-            Text(text = "R")
-        } else if (cell.driver != null) {
-            Text(text = "D")
+        modifier =
+            modifier
+                .clickable { onCellClick(cell) },
+    ) {
+        when {
+            cell.hasRunner -> Text("R")
+            cell.driver != null -> Text("D")
         }
     }
 }
@@ -77,13 +81,15 @@ fun QuestScreenPreview() {
     }
 }
 
-val fakeGroundCells = List(50) { index ->
-    GroundCellUiModel(
-        driver = if (index % 10 == 0) {
-            DriverUiModel("1", "Driver 1", 5)
-        } else {
-            null
-        },
-        cellId = index.toLong(),
-    )
-}
+val fakeGroundCells =
+    List(50) { index ->
+        GroundCellUiModel(
+            driver =
+                if (index % 10 == 0) {
+                    DriverUiModel("1", "Driver 1", 1, 2, 3)
+                } else {
+                    null
+                },
+            cellId = index.toLong(),
+        )
+    }
