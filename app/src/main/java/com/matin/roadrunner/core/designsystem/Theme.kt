@@ -1,4 +1,4 @@
-package com.matin.roadrunner.ui.theme
+package com.matin.roadrunner.core.designsystem
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

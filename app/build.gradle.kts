@@ -57,7 +57,7 @@ spotless {
         ktlint()
     }
 
-    // Optional: XML formatting (for Android resources)
+    // XML formatting (for Android resources)
     format("xml") {
         target("**/res/**/*.xml")
         indentWithSpaces(4)
