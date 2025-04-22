@@ -1,10 +1,13 @@
 package com.matin.roadrunner.feature.mainqeust
 
-import com.matin.roadrunner.feature.mainqeust.model.TaxiUiModel
+import com.matin.roadrunner.core.common.Position
 import com.matin.roadrunner.feature.mainqeust.model.GroundCellUiModel
+import com.matin.roadrunner.feature.mainqeust.model.TaxiUiModel
 import kotlin.random.Random
 
 class PlayGroundEngine(private val gridSize: Int, private val taxiCount: Int) {
+    val runner = Position(Random.nextInt(0, gridSize), Random.nextInt(0, gridSize))
+
     private var taxis =
         List(taxiCount) {
             TaxiUiModel(
@@ -16,20 +19,24 @@ class PlayGroundEngine(private val gridSize: Int, private val taxiCount: Int) {
             )
         }
 
-    private val validMoves =
+    private val possibleMoves =
         listOf(
-            1 to 0, // Right
-            -1 to 0, // Left
-            0 to 1, // Top
-            0 to -1, // Bottom
+            Position(1, 0), // Right
+            Position(-1, 0), // Left
+            Position(0, 1), // Top
+            Position(0, -1), // Bottom
         )
 
     private fun initPlayground(): List<List<GroundCellUiModel>> {
         val taxisMap = taxis.associateBy { it.x to it.y }
         return List(gridSize) { row ->
             List(gridSize) { column ->
-                val taxi = taxisMap[row to column]
-                GroundCellUiModel(cellId = Random.nextLong(), taxi = taxi)
+                if (row == runner.x && column == runner.y) {
+                    GroundCellUiModel(cellId = Random.nextLong(), hasRunner = true)
+                } else {
+                    val taxi = taxisMap[row to column]
+                    GroundCellUiModel(cellId = Random.nextLong(), taxi = taxi)
+                }
             }
         }
     }
@@ -38,7 +45,7 @@ class PlayGroundEngine(private val gridSize: Int, private val taxiCount: Int) {
         taxis =
             taxis.map { taxi ->
                 val nextPosition = calculateTaxiNextPosition(taxi)
-                taxi.copy(x = nextPosition.first, y = nextPosition.second)
+                taxi.copy(x = nextPosition.x, y = nextPosition.y)
             }
     }
 
@@ -47,13 +54,13 @@ class PlayGroundEngine(private val gridSize: Int, private val taxiCount: Int) {
         return initPlayground()
     }
 
-    private fun calculateTaxiNextPosition(taxi: TaxiUiModel): Pair<Int, Int> {
-        return validMoves.map { (x, y) -> taxi.x + x to taxi.y + y }
-            .filter { isWithInGrid(it.first, it.second) }.randomOrNull() ?: generateRandomMove()
+    private fun calculateTaxiNextPosition(taxi: TaxiUiModel): Position {
+        return possibleMoves.map { position -> Position(taxi.x + position.x, taxi.y + position.y) }
+            .filter { isValidMove(it.x, it.y) }.randomOrNull() ?: generateRandomMove()
     }
 
-    private fun isWithInGrid(x: Int, y: Int) = x in 0 until gridSize && y in 0 until gridSize
+    private fun isValidMove(x: Int, y: Int) = x in 0 until gridSize && y in 0 until gridSize && x != runner.x && y != runner.y
 
     private fun generateRandomMove() =
-        Pair(Random.nextInt(0, gridSize), Random.nextInt(0, gridSize))
+        Position(Random.nextInt(0, gridSize), Random.nextInt(0, gridSize))
 }
