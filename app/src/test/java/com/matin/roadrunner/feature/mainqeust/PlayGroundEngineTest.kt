@@ -10,7 +10,7 @@ class PlayGroundEngineTest {
     }
 
     @Test
-    fun `getPlaygroundCellState returns list with correct driver count`() {
-        assertEquals(5, PlayGroundEngine(10, 5).getPlaygroundCellState().flatten().count { it.driver != null })
+    fun `getPlaygroundCellState returns list with correct taxi count`() {
+        assertEquals(5, PlayGroundEngine(10, 5).getPlaygroundCellState().flatten().count { it.taxi != null })
     }
 }

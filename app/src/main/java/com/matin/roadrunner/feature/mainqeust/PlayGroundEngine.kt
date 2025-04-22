@@ -1,15 +1,15 @@
 package com.matin.roadrunner.feature.mainqeust
 
-import com.matin.roadrunner.feature.mainqeust.model.DriverUiModel
+import com.matin.roadrunner.feature.mainqeust.model.TaxiUiModel
 import com.matin.roadrunner.feature.mainqeust.model.GroundCellUiModel
 import kotlin.random.Random
 
-class PlayGroundEngine(private val gridSize: Int, private val driverCount: Int) {
-    private var drivers =
-        List(driverCount) {
-            DriverUiModel(
+class PlayGroundEngine(private val gridSize: Int, private val taxiCount: Int) {
+    private var taxis =
+        List(taxiCount) {
+            TaxiUiModel(
                 id = it.toString(),
-                name = "Driver $it",
+                name = "Taxi $it",
                 point = 5,
                 x = Random.nextInt(0, gridSize),
                 y = Random.nextInt(0, gridSize),
@@ -25,30 +25,30 @@ class PlayGroundEngine(private val gridSize: Int, private val driverCount: Int) 
         )
 
     private fun initPlayground(): List<List<GroundCellUiModel>> {
-        val driversMap = drivers.associateBy { it.x to it.y }
+        val taxisMap = taxis.associateBy { it.x to it.y }
         return List(gridSize) { row ->
             List(gridSize) { column ->
-                val driver = driversMap[row to column]
-                GroundCellUiModel(cellId = Random.nextLong(), driver = driver)
+                val taxi = taxisMap[row to column]
+                GroundCellUiModel(cellId = Random.nextLong(), taxi = taxi)
             }
         }
     }
 
-    private fun moveDrivers() {
-        drivers =
-            drivers.map { driver ->
-                val nextPosition = calculateDriverNextPosition(driver)
-                driver.copy(x = nextPosition.first, y = nextPosition.second)
+    private fun moveTaxis() {
+        taxis =
+            taxis.map { taxi ->
+                val nextPosition = calculateTaxiNextPosition(taxi)
+                taxi.copy(x = nextPosition.first, y = nextPosition.second)
             }
     }
 
     fun getPlaygroundCellState(): List<List<GroundCellUiModel>> {
-        moveDrivers()
+        moveTaxis()
         return initPlayground()
     }
 
-    private fun calculateDriverNextPosition(driver: DriverUiModel): Pair<Int, Int> {
-        return validMoves.map { (x, y) -> driver.x + x to driver.y + y }
+    private fun calculateTaxiNextPosition(taxi: TaxiUiModel): Pair<Int, Int> {
+        return validMoves.map { (x, y) -> taxi.x + x to taxi.y + y }
             .filter { isWithInGrid(it.first, it.second) }.randomOrNull() ?: generateRandomMove()
     }
 

@@ -21,7 +21,7 @@ class QuestScreenViewModel
     constructor() : ViewModel() {
         private val _playGroundCellsState = MutableStateFlow(listOf(listOf<GroundCellUiModel>()))
         val playGroundCellsState = _playGroundCellsState.asStateFlow()
-        private val playGroundEngine = PlayGroundEngine(gridSize = 10, driverCount = 5)
+        private val playGroundEngine = PlayGroundEngine(gridSize = 10, taxiCount = 5)
 
         private val _toastMessage = MutableSharedFlow<ToastMessageModel>()
         val toastMessage = _toastMessage.asSharedFlow()
@@ -45,7 +45,7 @@ class QuestScreenViewModel
 
         fun onCellClick(cell: GroundCellUiModel) {
             viewModelScope.launch {
-                if (cell.driver != null) {
+                if (cell.taxi != null) {
                 } else {
                     _toastMessage.emit(ToastMessageModel(MessageType.EMPTY_CELL))
                 }

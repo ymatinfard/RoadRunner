@@ -27,7 +27,7 @@ import com.matin.roadrunner.R
 import com.matin.roadrunner.core.common.ToastMessageModel
 import com.matin.roadrunner.core.designsystem.RoadRunnerTheme
 import com.matin.roadrunner.core.designsystem.ToastMessage
-import com.matin.roadrunner.feature.mainqeust.model.DriverUiModel
+import com.matin.roadrunner.feature.mainqeust.model.TaxiUiModel
 import com.matin.roadrunner.feature.mainqeust.model.GroundCellUiModel
 
 @Composable
@@ -86,7 +86,7 @@ fun PlaygroundCell(
     ) {
         when {
             cell.hasRunner -> CellImage(resId = R.drawable.ic_person, "Runner")
-            cell.driver != null -> CellImage(resId = R.drawable.ic_taxi, "Taxi")
+            cell.taxi != null -> CellImage(resId = R.drawable.ic_taxi, "Taxi")
         }
     }
 }
@@ -112,9 +112,9 @@ val fakeGroundCells =
     List(100) { index ->
         GroundCellUiModel(
             hasRunner = index == 55,
-            driver =
+            taxi =
                 if (index % 10 == 0) {
-                    DriverUiModel("1", "Driver 1", 1, 2, 3)
+                    TaxiUiModel("1", "Taxi 1", 1, 2, 3)
                 } else {
                     null
                 },
