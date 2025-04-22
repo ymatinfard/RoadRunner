@@ -2,7 +2,6 @@ package com.matin.roadrunner.feature.mainqeust
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -14,32 +13,45 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.roadrunner.R
+import com.matin.roadrunner.core.common.ToastMessageModel
 import com.matin.roadrunner.core.designsystem.RoadRunnerTheme
+import com.matin.roadrunner.core.designsystem.ToastMessage
 import com.matin.roadrunner.feature.mainqeust.model.DriverUiModel
 import com.matin.roadrunner.feature.mainqeust.model.GroundCellUiModel
 
 @Composable
 fun QuestScreen(viewModel: QuestScreenViewModel = hiltViewModel<QuestScreenViewModel>()) {
     val groundCells by viewModel.playGroundCellsState.collectAsStateWithLifecycle()
-    QuestScreenContent(cells = groundCells.flatten(), onCellClick = {})
+    val message by viewModel.toastMessage.collectAsStateWithLifecycle(ToastMessageModel())
+    QuestScreenContent(
+        cells = groundCells.flatten(),
+        message,
+        onCellClick = {
+            viewModel.onCellClick(
+                it,
+            )
+        },
+    )
 }
 
 @Composable
 fun QuestScreenContent(
     cells: List<GroundCellUiModel>,
+    message: ToastMessageModel,
     onCellClick: (GroundCellUiModel) -> Unit,
 ) {
+    val context = LocalContext.current
     Surface(modifier = Modifier.fillMaxSize()) {
         val cellModifier =
             Modifier
@@ -53,14 +65,15 @@ fun QuestScreenContent(
                 cells,
                 key = { cell -> cell.cellId },
             ) { cell ->
-                GroundCell(cellModifier, cell, onCellClick)
+                PlaygroundCell(cellModifier, cell, onCellClick)
             }
         }
+        ToastMessage(message, context)
     }
 }
 
 @Composable
-fun GroundCell(
+fun PlaygroundCell(
     modifier: Modifier,
     cell: GroundCellUiModel,
     onCellClick: (GroundCellUiModel) -> Unit,
@@ -72,31 +85,31 @@ fun GroundCell(
         contentAlignment = Alignment.Center,
     ) {
         when {
-            cell.hasRunner -> Image(
-                painter = painterResource(id = R.drawable.ic_person),
-                modifier = Modifier.size(24.dp),
-                contentDescription = "RoadRunner",
-            )
-
-            cell.driver != null -> Image(
-                painter = painterResource(id = R.drawable.ic_taxi),
-                modifier = Modifier.size(24.dp),
-                contentDescription = "Taxi",
-            )
+            cell.hasRunner -> CellImage(resId = R.drawable.ic_person, "Runner")
+            cell.driver != null -> CellImage(resId = R.drawable.ic_taxi, "Taxi")
         }
     }
+}
+
+@Composable
+private fun CellImage(resId: Int, contentDescription: String) {
+    Image(
+        painter = painterResource(id = resId),
+        modifier = Modifier.size(24.dp),
+        contentDescription = contentDescription,
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun QuestScreenPreview() {
     RoadRunnerTheme {
-        QuestScreenContent(fakeGroundCells, {})
+        QuestScreenContent(fakeGroundCells, ToastMessageModel(), {})
     }
 }
 
 val fakeGroundCells =
-    List(100){ index ->
+    List(100) { index ->
         GroundCellUiModel(
             hasRunner = index == 55,
             driver =

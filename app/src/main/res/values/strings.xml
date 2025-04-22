@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">RoadRunner</string>
+    <string name="this_cell_is_empty">This cell is empty</string>
 </resources>
