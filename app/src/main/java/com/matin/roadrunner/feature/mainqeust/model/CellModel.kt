@@ -1,7 +1,7 @@
 package com.matin.roadrunner.feature.mainqeust.model
 
-data class GroundCellUiModel(
+data class CellModel(
     var cellId: Long = 0,
     var hasRunner: Boolean = false,
-    var taxi: TaxiUiModel? = null,
+    var taxi: TaxiModel? = null,
 )

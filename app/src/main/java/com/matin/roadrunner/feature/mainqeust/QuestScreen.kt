@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -24,11 +25,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.roadrunner.R
+import com.matin.roadrunner.core.common.Position
 import com.matin.roadrunner.core.common.ToastMessageModel
 import com.matin.roadrunner.core.designsystem.RoadRunnerTheme
 import com.matin.roadrunner.core.designsystem.ToastMessage
-import com.matin.roadrunner.feature.mainqeust.model.GroundCellUiModel
-import com.matin.roadrunner.feature.mainqeust.model.TaxiUiModel
+import com.matin.roadrunner.feature.mainqeust.model.CellModel
+import com.matin.roadrunner.feature.mainqeust.model.TaxiModel
 
 @Composable
 fun QuestScreen(viewModel: QuestScreenViewModel = hiltViewModel<QuestScreenViewModel>()) {
@@ -47,9 +49,9 @@ fun QuestScreen(viewModel: QuestScreenViewModel = hiltViewModel<QuestScreenViewM
 
 @Composable
 fun QuestScreenContent(
-    cells: List<GroundCellUiModel>,
+    cells: List<CellModel>,
     message: ToastMessageModel,
-    onCellClick: (GroundCellUiModel) -> Unit,
+    onCellClick: (CellModel) -> Unit,
 ) {
     val context = LocalContext.current
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -75,8 +77,8 @@ fun QuestScreenContent(
 @Composable
 fun PlaygroundCell(
     modifier: Modifier,
-    cell: GroundCellUiModel,
-    onCellClick: (GroundCellUiModel) -> Unit,
+    cell: CellModel,
+    onCellClick: (CellModel) -> Unit,
 ) {
     Box(
         modifier =
@@ -87,6 +89,7 @@ fun PlaygroundCell(
         when {
             cell.hasRunner -> CellImage(resId = R.drawable.ic_person, "Runner")
             cell.taxi != null -> CellImage(resId = R.drawable.ic_taxi, "Taxi")
+            else -> Text(cell.cellId.toString())
         }
     }
 }
@@ -110,11 +113,11 @@ fun QuestScreenPreview() {
 
 val fakeGroundCells =
     List(100) { index ->
-        GroundCellUiModel(
+        CellModel(
             hasRunner = index == 55,
             taxi =
                 if (index % 10 == 0) {
-                    TaxiUiModel("1", "Taxi 1", 1, 2, 3)
+                    TaxiModel("1", "Taxi 1", 1, position = Position(3, 2))
                 } else {
                     null
                 },
