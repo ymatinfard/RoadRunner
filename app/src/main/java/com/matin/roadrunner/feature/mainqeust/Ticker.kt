@@ -1,5 +1,6 @@
 package com.matin.roadrunner.feature.mainqeust
 
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -41,5 +42,6 @@ class TickerImpl
         override fun stop() {
             job?.cancel()
             job = null
+            _tick.value = 0L
         }
     }

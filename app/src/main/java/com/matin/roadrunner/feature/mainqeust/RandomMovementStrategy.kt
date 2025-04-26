@@ -2,7 +2,6 @@ package com.matin.roadrunner.feature.mainqeust
 
 import com.matin.roadrunner.core.common.Position
 import javax.inject.Inject
-import kotlin.random.Random
 
 class RandomMovementStrategy
     @Inject
@@ -23,14 +22,11 @@ class RandomMovementStrategy
                 possibleMoves.map { possibleMove -> taxi + possibleMove }
                     .filter { isValidPosition(it) }
                     .filter { isCollision(it, runner).not() }
-            return availableMoves.randomOrNull() ?: generateRandomMove()
+            return availableMoves.randomOrNull() ?: generateRandomPosition(to = gameConfig.playGroundSize)
         }
 
         private fun isCollision(taxi: Position, runner: Position?): Boolean {
             if (runner == null) return false
             return taxi.x == runner.x && taxi.y == runner.y
         }
-
-        private fun generateRandomMove(): Position =
-            Position(Random.nextInt(0, gameConfig.playGroundSize), Random.nextInt(0, gameConfig.playGroundSize))
     }

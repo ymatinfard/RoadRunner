@@ -18,10 +18,7 @@ class RunnerController
     ) {
         private var _runner =
             MutableStateFlow(
-                Position(
-                    Random.nextInt(0, gameConfig.playGroundSize),
-                    Random.nextInt(0, gameConfig.playGroundSize),
-                ),
+                generateRandomPosition(to = gameConfig.playGroundSize),
             )
         val runner = _runner.asStateFlow()
         private var target: Position? = null
@@ -41,4 +38,17 @@ class RunnerController
             }
             return true
         }
+
+        fun reset() {
+            _runner.update {
+                generateRandomPosition(to = gameConfig.playGroundSize)
+            }
+            target = null
+        }
     }
+
+fun generateRandomPosition(from: Int = 0, to: Int) =
+    Position(
+        Random.nextInt(from, to),
+        Random.nextInt(from, to),
+    )

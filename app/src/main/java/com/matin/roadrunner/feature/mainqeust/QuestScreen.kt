@@ -5,12 +5,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -44,6 +48,9 @@ fun QuestScreen(viewModel: QuestScreenViewModel = hiltViewModel<QuestScreenViewM
                 it,
             )
         },
+        onRestartClick = {
+            viewModel.restartGame()
+        },
     )
 }
 
@@ -52,6 +59,7 @@ fun QuestScreenContent(
     cells: List<CellModel>,
     message: ToastMessageModel,
     onCellClick: (CellModel) -> Unit,
+    onRestartClick: () -> Unit = {},
 ) {
     val context = LocalContext.current
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -60,17 +68,25 @@ fun QuestScreenContent(
                 .aspectRatio(1f)
                 .border(BorderStroke(1.dp, color = MaterialTheme.colorScheme.tertiary))
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(10),
-        ) {
-            items(
-                cells,
-                key = { cell -> cell.cellId },
-            ) { cell ->
-                PlaygroundCell(cellModifier, cell, onCellClick)
+        Column {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(10),
+            ) {
+                items(
+                    cells,
+                    key = { cell -> cell.cellId },
+                ) { cell ->
+                    PlaygroundCell(cellModifier, cell, onCellClick)
+                }
             }
+
+            Spacer(Modifier.height(20.dp))
+            Button(onClick = onRestartClick, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                Text("Restart")
+            }
+
+            ToastMessage(message, context)
         }
-        ToastMessage(message, context)
     }
 }
 

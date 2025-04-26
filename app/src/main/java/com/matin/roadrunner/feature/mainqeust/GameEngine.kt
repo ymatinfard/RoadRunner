@@ -2,6 +2,7 @@ package com.matin.roadrunner.feature.mainqeust
 
 import com.matin.roadrunner.feature.mainqeust.model.TaxiModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,14 +15,17 @@ class GameEngine
         private val playgroundStateManager: PlaygroundStateManager,
     ) {
         val playgroundState = playgroundStateManager.playGroundState
+        var job: Job? = null
 
         fun start(scope: CoroutineScope) {
+            stopGame()
             ticker.start(scope)
-            scope.launch {
-                ticker.tick.collect {
-                    gameLoop()
+            job =
+                scope.launch {
+                    ticker.tick.collect {
+                        gameLoop()
+                    }
                 }
-            }
         }
 
         private fun gameLoop() {
@@ -41,7 +45,14 @@ class GameEngine
             runnerController.selectTarget(taxi.position)
         }
 
+        fun restart(scope: CoroutineScope) {
+            runnerController.reset()
+            taxiManager.reset()
+            start(scope)
+        }
+
         fun stopGame() {
-            ticker.stop()
+            job?.cancel()
+            job = null
         }
     }

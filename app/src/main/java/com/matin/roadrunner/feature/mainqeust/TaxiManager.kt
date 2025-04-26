@@ -45,9 +45,17 @@ class TaxiManager
         fun moveTaxis() {
             _taxisState.update { currentTaxis ->
                 currentTaxis.map { taxi ->
-                    val nextPosition = randomMovementStrategy.calculateNextMove(taxi.position, runnerController.runner.value)
+                    val nextPosition =
+                        randomMovementStrategy.calculateNextMove(
+                            taxi.position,
+                            runnerController.runner.value,
+                        )
                     taxi.copy(position = nextPosition)
                 }
             }
+        }
+
+        fun reset() {
+            initTaxis()
         }
     }

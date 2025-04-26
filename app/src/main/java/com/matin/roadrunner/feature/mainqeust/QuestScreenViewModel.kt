@@ -29,6 +29,10 @@ class QuestScreenViewModel
             gameEngine.start(viewModelScope)
         }
 
+        fun restartGame() {
+            gameEngine.restart(viewModelScope)
+        }
+
         fun onCellClick(cell: CellModel) {
             viewModelScope.launch {
                 if (cell.taxi != null) {
