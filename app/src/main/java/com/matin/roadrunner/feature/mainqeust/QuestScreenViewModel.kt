@@ -2,14 +2,14 @@ package com.matin.roadrunner.feature.mainqeust
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.matin.roadrunner.core.common.MessageType
+import com.matin.roadrunner.core.common.Position
 import com.matin.roadrunner.core.common.ToastMessageModel
 import com.matin.roadrunner.feature.mainqeust.model.CellModel
+import com.matin.roadrunner.feature.mainqeust.model.TaxiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,6 +17,8 @@ class QuestScreenViewModel
     @Inject
     constructor(private val gameEngine: GameEngine) : ViewModel() {
         val playGroundCellsState: StateFlow<List<List<CellModel>>> = gameEngine.playgroundState
+        val runnerPosition: StateFlow<Position> = gameEngine.runnerController.runner
+        val texis: StateFlow<List<TaxiModel>> = gameEngine.taxiManager.taxis
 
         private val _toastMessage = MutableSharedFlow<ToastMessageModel>()
         val toastMessage = _toastMessage.asSharedFlow()
@@ -33,13 +35,7 @@ class QuestScreenViewModel
             gameEngine.restart(viewModelScope)
         }
 
-        fun onCellClick(cell: CellModel) {
-            viewModelScope.launch {
-                if (cell.taxi != null) {
-                    gameEngine.selectTaxi(cell.taxi!!)
-                } else {
-                    _toastMessage.emit(ToastMessageModel(MessageType.EMPTY_CELL))
-                }
-            }
+        fun onTaxiClick(taxi: TaxiModel) {
+            gameEngine.selectTaxi(taxi)
         }
     }

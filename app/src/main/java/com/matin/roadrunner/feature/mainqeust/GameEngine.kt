@@ -10,8 +10,8 @@ class GameEngine
     @Inject
     constructor(
         private val ticker: Ticker,
-        private val runnerController: RunnerController,
-        private val taxiManager: TaxiManager,
+        val runnerController: RunnerController,
+        val taxiManager: TaxiManager,
         private val playgroundStateManager: PlaygroundStateManager,
     ) {
         val playgroundState = playgroundStateManager.playGroundState
