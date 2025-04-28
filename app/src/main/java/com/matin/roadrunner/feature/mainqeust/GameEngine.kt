@@ -1,8 +1,13 @@
 package com.matin.roadrunner.feature.mainqeust
 
+import com.matin.roadrunner.core.common.Position
+import com.matin.roadrunner.feature.mainqeust.bfs.BFS
+import com.matin.roadrunner.feature.mainqeust.bfs.SquareGrid
 import com.matin.roadrunner.feature.mainqeust.model.TaxiModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -13,8 +18,12 @@ class GameEngine
         val runnerController: RunnerController,
         val taxiManager: TaxiManager,
         private val playgroundStateManager: PlaygroundStateManager,
+        private val pathFinder: BFS,
+        private val squareGrid: SquareGrid,
     ) {
         val playgroundState = playgroundStateManager.playGroundState
+        val pathState = MutableStateFlow<List<Position>>(emptyList())
+
         var job: Job? = null
 
         fun start(scope: CoroutineScope) {
@@ -42,7 +51,10 @@ class GameEngine
         }
 
         fun selectTaxi(taxi: TaxiModel) {
-            runnerController.selectTarget(taxi.position)
+            stopGame()
+            pathState.update {
+                pathFinder.getPath(squareGrid, runnerController.runner.value, taxi.position)
+            }
         }
 
         fun restart(scope: CoroutineScope) {
@@ -52,6 +64,7 @@ class GameEngine
         }
 
         fun stopGame() {
+            ticker.stop()
             job?.cancel()
             job = null
         }

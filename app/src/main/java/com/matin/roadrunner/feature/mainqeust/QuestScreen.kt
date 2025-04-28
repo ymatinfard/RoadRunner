@@ -1,48 +1,35 @@
 package com.matin.roadrunner.feature.mainqeust
-
-import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.matin.roadrunner.R
 import com.matin.roadrunner.core.common.Position
 import com.matin.roadrunner.core.common.ToastMessageModel
-import com.matin.roadrunner.core.designsystem.RoadRunnerTheme
-import com.matin.roadrunner.core.designsystem.ToastMessage
-import com.matin.roadrunner.feature.mainqeust.model.CellModel
 import com.matin.roadrunner.feature.mainqeust.model.TaxiModel
 
 @Composable
@@ -50,64 +37,91 @@ fun QuestScreen(viewModel: QuestScreenViewModel = hiltViewModel<QuestScreenViewM
     val runner by viewModel.runnerPosition.collectAsStateWithLifecycle()
     val taxis by viewModel.texis.collectAsStateWithLifecycle()
     val message by viewModel.toastMessage.collectAsStateWithLifecycle(ToastMessageModel())
+    val path by viewModel.path.collectAsStateWithLifecycle()
 
-    NewQuestScreenContent(
+    QuestScreenContent(
         taxis = taxis,
         runner = runner,
+        path = path,
         onRestartClick = { viewModel.restartGame() },
         onTaxiClick = { viewModel.onTaxiClick(it) },
     )
 }
 
 @Composable
-fun NewQuestScreenContent(
+fun QuestScreenContent(
     taxis: List<TaxiModel>,
     runner: Position,
+    path: List<Position>,
     onRestartClick: () -> Unit,
     onTaxiClick: (TaxiModel) -> Unit,
 ) {
-    val gridSize = 10
-    val cellSize = 50
+    val cellNumber = 10
 
-    Column {
-        Playground(gridSize, cellSize)
-        Spacer(Modifier.height(20.dp))
-        ControlButton(onRestartClick = onRestartClick)
-    }
+    BoxWithConstraints(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        val screeWidth = maxWidth
+        val cellSize = screeWidth / cellNumber
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Box(
+                modifier =
+                    Modifier
+                        .size(cellNumber * cellSize)
+                        .background(MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.medium)
+                        .border(2.dp, MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.medium)
+                        .padding(2.dp),
+            ) {
+                Playground(cellNumber, cellSize)
+                Path(path, cellSize)
+                RunnerIcon(runner, cellSize)
+                TaxisIcon(taxis, onTaxiClick, cellSize)
+            }
 
-    RunnerIcon(runner)
-    TaxisIcon(taxis, onTaxiClick)
-}
+            Spacer(modifier = Modifier.height(24.dp))
 
-@Composable
-fun ControlButton(modifier: Modifier = Modifier, onRestartClick: () -> Unit = {}) {
-    Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-        Button(
-            onClick = onRestartClick,
-        ) {
-            Text("Restart")
+            Button(
+                onClick = onRestartClick,
+                modifier = Modifier,
+                shape = MaterialTheme.shapes.medium,
+            ) {
+                Text("Restart Journey", style = MaterialTheme.typography.labelLarge)
+            }
         }
     }
 }
 
 @Composable
-private fun Playground(gridSize: Int, cellSize: Int) {
-    Log.d("Playground", "Playground")
-    Box(
-        modifier = Modifier
-            .size((gridSize * cellSize).dp)
-            .background(Color.LightGray),
-    ) {
-        Column {
-            for (row in 0 until gridSize) {
-                Row {
-                    for (column in 0 until gridSize) {
-                        Box(
-                            modifier = Modifier
-                                .size(cellSize.dp)
-                                .border(1.dp, Color.Gray),
-                        )
-                    }
+fun TaxisIcon(taxis: List<TaxiModel>, onTaxiClick: (TaxiModel) -> Unit, cellSize: Dp) {
+    taxis.forEach { taxi ->
+        TaxiIcon(taxi, onTaxiClick = onTaxiClick, cellSize)
+    }
+}
+
+@Composable
+fun Path(path: List<Position>, cellSize: Dp) {
+    path.forEach { position ->
+        PathCell(position, cellSize)
+    }
+}
+
+@Composable
+private fun Playground(gridSize: Int, cellSize: Dp) {
+    Column {
+        for (row in 0 until gridSize) {
+            Row {
+                for (column in 0 until gridSize) {
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(cellSize)
+                                .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant, shape = MaterialTheme.shapes.small),
+                    )
                 }
             }
         }
@@ -115,141 +129,65 @@ private fun Playground(gridSize: Int, cellSize: Int) {
 }
 
 @Composable
-private fun TaxisIcon(taxis: List<TaxiModel>, onTaxiClick: (TaxiModel) -> Unit) {
-    taxis.forEach { taxi ->
-        TaxiIcon(taxi, onTaxiClick = onTaxiClick)
-    }
+fun PathCell(position: Position, cellSize: Dp) {
+    val animatedX by animateDpAsState(targetValue = position.x * cellSize)
+    val animatedY by animateDpAsState(targetValue = position.y * cellSize)
+
+    Box(
+        modifier =
+            Modifier
+                .size(cellSize)
+                .offset(x = animatedX, y = animatedY)
+                .background(
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
+                    shape = MaterialTheme.shapes.small,
+                ),
+    )
 }
 
 @Composable
-fun RunnerIcon(runner: Position) {
-    val animatedX by animateDpAsState(targetValue = (runner.x * 50).dp)
-    val animatedY by animateDpAsState(targetValue = (runner.y * 50).dp)
+fun RunnerIcon(runner: Position, cellSize: Dp) {
+    val animatedX by animateDpAsState(targetValue = runner.x * cellSize)
+    val animatedY by animateDpAsState(targetValue = runner.y * cellSize)
 
     Box(
-        modifier = Modifier
-            .offset(x = animatedX, y = animatedY)
-            .size(50.dp),
+        modifier =
+            Modifier
+                .offset(x = animatedX, y = animatedY)
+                .size(cellSize)
+                .background(MaterialTheme.colorScheme.primaryContainer, shape = MaterialTheme.shapes.small)
+                .border(1.dp, MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.small),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_person),
             contentDescription = "Runner",
-            tint = Color.Green,
-            modifier = Modifier.size(32.dp),
+            tint = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.size(28.dp),
         )
     }
 }
 
 @Composable
-fun TaxiIcon(taxi: TaxiModel, onTaxiClick: (TaxiModel) -> Unit) {
-    val cellSize = 50
-
-    val animatedX by animateDpAsState(targetValue = (taxi.position.x * cellSize).dp)
-    val animatedY by animateDpAsState(targetValue = (taxi.position.y * cellSize).dp)
+fun TaxiIcon(taxi: TaxiModel, onTaxiClick: (TaxiModel) -> Unit, cellSize: Dp) {
+    val animatedX by animateDpAsState(targetValue = taxi.position.x * cellSize)
+    val animatedY by animateDpAsState(targetValue = taxi.position.y * cellSize)
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .offset(x = animatedX, y = animatedY)
-            .size(cellSize.dp)
-            .clickable { onTaxiClick(taxi) },
+        modifier =
+            Modifier
+                .offset(x = animatedX, y = animatedY)
+                .size(cellSize)
+                .clickable { onTaxiClick(taxi) }
+                .background(MaterialTheme.colorScheme.secondaryContainer, shape = MaterialTheme.shapes.small)
+                .border(1.dp, MaterialTheme.colorScheme.secondary, shape = MaterialTheme.shapes.small),
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_taxi),
             contentDescription = "Taxi",
-            tint = Color.Yellow,
-            modifier = Modifier.size(32.dp),
+            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+            modifier = Modifier.size(28.dp),
         )
     }
 }
-
-@Composable
-fun QuestScreenContent(
-    cells: List<CellModel>,
-    message: ToastMessageModel,
-    onCellClick: (CellModel) -> Unit,
-    onRestartClick: () -> Unit = {},
-) {
-    val context = LocalContext.current
-    Surface(modifier = Modifier.fillMaxSize()) {
-        val cellModifier =
-            Modifier
-                .aspectRatio(1f)
-                .border(BorderStroke(1.dp, color = MaterialTheme.colorScheme.tertiary))
-
-        Column {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(10),
-            ) {
-                items(
-                    cells,
-                    key = { cell -> cell.cellId },
-                ) { cell ->
-                    PlaygroundCell(cellModifier, cell, onCellClick)
-                }
-            }
-
-            Spacer(Modifier.height(20.dp))
-            Button(
-                onClick = onRestartClick,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-            ) {
-                Text("Restart")
-            }
-
-            ToastMessage(message, context)
-        }
-    }
-}
-
-@Composable
-fun PlaygroundCell(
-    modifier: Modifier,
-    cell: CellModel,
-    onCellClick: (CellModel) -> Unit,
-) {
-    Box(
-        modifier =
-            modifier
-                .clickable { onCellClick(cell) },
-        contentAlignment = Alignment.Center,
-    ) {
-        when {
-            cell.hasRunner -> CellImage(resId = R.drawable.ic_person, "Runner")
-            cell.taxi != null -> CellImage(resId = R.drawable.ic_taxi, "Taxi")
-            else -> Text(cell.cellId.toString())
-        }
-    }
-}
-
-@Composable
-private fun CellImage(resId: Int, contentDescription: String) {
-    Image(
-        painter = painterResource(id = resId),
-        modifier = Modifier.size(24.dp),
-        contentDescription = contentDescription,
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun QuestScreenPreview() {
-    RoadRunnerTheme {
-        QuestScreenContent(fakeGroundCells, ToastMessageModel(), {})
-    }
-}
-
-val fakeGroundCells =
-    List(100) { index ->
-        CellModel(
-            hasRunner = index == 55,
-            taxi =
-                if (index % 10 == 0) {
-                    TaxiModel("1", "Taxi 1", 1, position = Position(3, 2))
-                } else {
-                    null
-                },
-            cellId = index.toLong(),
-        )
-    }

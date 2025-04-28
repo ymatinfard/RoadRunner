@@ -19,6 +19,7 @@ class QuestScreenViewModel
         val playGroundCellsState: StateFlow<List<List<CellModel>>> = gameEngine.playgroundState
         val runnerPosition: StateFlow<Position> = gameEngine.runnerController.runner
         val texis: StateFlow<List<TaxiModel>> = gameEngine.taxiManager.taxis
+        val path: StateFlow<List<Position>> = gameEngine.pathState
 
         private val _toastMessage = MutableSharedFlow<ToastMessageModel>()
         val toastMessage = _toastMessage.asSharedFlow()
