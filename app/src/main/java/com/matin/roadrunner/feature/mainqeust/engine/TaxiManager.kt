@@ -1,7 +1,9 @@
-package com.matin.roadrunner.feature.mainqeust
+package com.matin.roadrunner.feature.mainqeust.engine
 
 import com.matin.roadrunner.core.common.Position
+import com.matin.roadrunner.feature.mainqeust.GameConfig
 import com.matin.roadrunner.feature.mainqeust.di.RandomMovement
+import com.matin.roadrunner.feature.mainqeust.model.Direction
 import com.matin.roadrunner.feature.mainqeust.model.TaxiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +16,6 @@ import kotlin.random.Random
 class TaxiManager
     @Inject
     constructor(
-        private val runnerController: RunnerController,
         private val gameConfig: GameConfig,
         @RandomMovement private val randomMovementStrategy: MovementStrategy,
     ) {
@@ -34,9 +35,10 @@ class TaxiManager
                         point = 5,
                         position =
                             Position(
-                                x = Random.nextInt(0, gameConfig.playGroundSize),
-                                y = Random.nextInt(0, gameConfig.playGroundSize),
+                                x = Random.nextInt(0, gameConfig.cellCount),
+                                y = Random.nextInt(0, gameConfig.cellCount),
                             ),
+                        direction = Direction.values.random(),
                     )
                 }
             }
@@ -47,8 +49,7 @@ class TaxiManager
                 currentTaxis.map { taxi ->
                     val nextPosition =
                         randomMovementStrategy.calculateNextMove(
-                            taxi.position,
-                            runnerController.runner.value,
+                            taxi,
                         )
                     taxi.copy(position = nextPosition)
                 }

@@ -1,24 +1,34 @@
 package com.matin.roadrunner.feature.mainqeust
 
 import com.matin.roadrunner.core.common.Position
+import com.matin.roadrunner.feature.mainqeust.engine.RandomMovementStrategy
+import com.matin.roadrunner.feature.mainqeust.engine.RunnerController
+import com.matin.roadrunner.feature.mainqeust.engine.WallProvider
+import com.matin.roadrunner.feature.mainqeust.model.Direction
+import com.matin.roadrunner.feature.mainqeust.model.TaxiModel
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class RandomMovementStrategyTest {
     @Test
     fun calculateNextMove() {
         val gameConfig = GameConfig(10)
-        val strategy = RandomMovementStrategy(gameConfig)
-        val current = Position(2, 2)
-        val runner = Position(7, 7)
-        val possibleMoves =
-            listOf(
-                Position(1, 0), // Right
-                Position(-1, 0), // Left
-                Position(0, 1), // Top
-                Position(0, -1), // Bottom
-            ).map { current + it }
-        val nextMove = strategy.calculateNextMove(current, runner)
+        val wallsProvider = WallProvider()
+        val runnerController = RunnerController(gameConfig)
+        val strategy = RandomMovementStrategy(gameConfig, wallsProvider, runnerController)
+        val current =
+            TaxiModel(
+                id = "1",
+                name = "taxi1",
+                point = 10,
+                position = Position(5, 5),
+                direction = Direction.DOWN,
+            )
 
-        assert(nextMove in possibleMoves)
+        val expectedNextMove = Position(5, 6)
+
+        val nextMove = strategy.calculateNextMove(current)
+
+        assertEquals(expectedNextMove, nextMove)
     }
 }

@@ -1,11 +1,10 @@
 package com.matin.roadrunner.feature.mainqeust.di
 
-import com.matin.roadrunner.feature.mainqeust.DirectMovementStrategy
 import com.matin.roadrunner.feature.mainqeust.GameConfig
-import com.matin.roadrunner.feature.mainqeust.MovementStrategy
-import com.matin.roadrunner.feature.mainqeust.RandomMovementStrategy
-import com.matin.roadrunner.feature.mainqeust.Ticker
-import com.matin.roadrunner.feature.mainqeust.TickerImpl
+import com.matin.roadrunner.feature.mainqeust.engine.MovementStrategy
+import com.matin.roadrunner.feature.mainqeust.engine.RandomMovementStrategy
+import com.matin.roadrunner.feature.mainqeust.engine.Ticker
+import com.matin.roadrunner.feature.mainqeust.engine.TickerImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -19,10 +18,6 @@ interface MainQuestModuleBinder {
     @Binds
     @RandomMovement
     fun bindRandomMovementStrategy(randomMovementStrategy: RandomMovementStrategy): MovementStrategy
-
-    @Binds
-    @DirectMovement
-    fun bindRandomMovementStrategyQualifier(randomMovementStrategy: DirectMovementStrategy): MovementStrategy
 
     @Binds
     fun bindTicker(tickerImpl: TickerImpl): Ticker

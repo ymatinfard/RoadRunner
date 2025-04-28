@@ -1,4 +1,4 @@
-package com.matin.roadrunner.feature.mainqeust
+package com.matin.roadrunner.feature.mainqeust.engine
 
 import com.matin.roadrunner.core.common.Position
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,16 +19,17 @@ class WallProvider
         }
 
         fun generateWalls() {
+            // TODO() Generate walls random
             _walls.update {
                 listOf(
-                    Position(3, 3),
-                    Position(4, 3),
-                    Position(5, 3),
+                    Position(3, 2),
+                    Position(4, 2),
+                    Position(5, 2),
                     Position(6, 6),
                     Position(6, 7),
                     Position(6, 8),
-                    Position(1, 8),
-                    Position(1, 9),
+                    Position(2, 7),
+                    Position(2, 8),
                 )
             }
         }

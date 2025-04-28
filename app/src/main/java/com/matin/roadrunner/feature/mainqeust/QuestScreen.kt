@@ -45,6 +45,7 @@ fun QuestScreen(viewModel: QuestScreenViewModel = hiltViewModel<QuestScreenViewM
         runner = runner,
         path = path,
         walls = walls,
+        gameConfig = viewModel.gameConfig,
         onRestartClick = { viewModel.restartGame() },
         onTaxiClick = { viewModel.onTaxiClick(it) },
     )
@@ -56,11 +57,10 @@ fun QuestScreenContent(
     runner: Position,
     path: List<Position>,
     walls: List<Position>,
+    gameConfig: GameConfig,
     onRestartClick: () -> Unit,
     onTaxiClick: (TaxiModel) -> Unit,
 ) {
-    val cellNumber = 10
-
     BoxWithConstraints(
         modifier =
             Modifier
@@ -70,12 +70,13 @@ fun QuestScreenContent(
         contentAlignment = Alignment.TopCenter,
     ) {
         val screeWidth = maxWidth
-        val cellSize = screeWidth / cellNumber
+        val cellCount = gameConfig.cellCount
+        val cellSize = screeWidth / cellCount
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Box(
                 modifier =
                     Modifier
-                        .size(cellNumber * cellSize)
+                        .size(cellCount * cellSize)
                         .background(
                             MaterialTheme.colorScheme.surfaceVariant,
                             shape = MaterialTheme.shapes.medium,
@@ -87,7 +88,7 @@ fun QuestScreenContent(
                         )
                         .padding(2.dp),
             ) {
-                Playground(cellNumber, cellSize)
+                Playground(cellCount, cellSize)
                 Path(path, cellSize)
                 Walls(walls, cellSize)
                 Runner(runner, cellSize)
@@ -95,10 +96,10 @@ fun QuestScreenContent(
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-
+            Text("Path Length: ${path.size}", style = MaterialTheme.typography.labelLarge)
             Button(
+                modifier = Modifier.padding(top = 10.dp),
                 onClick = onRestartClick,
-                modifier = Modifier,
                 shape = MaterialTheme.shapes.medium,
             ) {
                 Text("Restart Journey", style = MaterialTheme.typography.labelLarge)

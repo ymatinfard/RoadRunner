@@ -1,8 +1,8 @@
-package com.matin.roadrunner.feature.mainqeust.bfs
+package com.matin.roadrunner.feature.mainqeust.search
 
 import com.matin.roadrunner.core.common.Position
 import com.matin.roadrunner.feature.mainqeust.GameConfig
-import com.matin.roadrunner.feature.mainqeust.WallProvider
+import com.matin.roadrunner.feature.mainqeust.engine.WallProvider
 import javax.inject.Inject
 
 class SquareGrid
@@ -11,7 +11,7 @@ class SquareGrid
         private val directions = listOf(Position(1, 0), Position(0, 1), Position(-1, 0), Position(0, -1))
 
         fun inBounds(position: Position): Boolean {
-            return position.x in 0 until gc.playGroundSize && position.y in 0 until gc.playGroundSize
+            return position.x in 0 until gc.cellCount && position.y in 0 until gc.cellCount
         }
 
         fun passable(position: Position): Boolean {

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.matin.roadrunner.core.common.Position
 import com.matin.roadrunner.core.common.ToastMessageModel
+import com.matin.roadrunner.feature.mainqeust.engine.GameEngine
 import com.matin.roadrunner.feature.mainqeust.model.TaxiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,11 +15,11 @@ import javax.inject.Inject
 @HiltViewModel
 class QuestScreenViewModel
     @Inject
-    constructor(private val gameEngine: GameEngine) : ViewModel() {
+    constructor(private val gameEngine: GameEngine, val gameConfig: GameConfig) : ViewModel() {
         val runnerPosition: StateFlow<Position> = gameEngine.runnerController.runner
         val texis: StateFlow<List<TaxiModel>> = gameEngine.taxiManager.taxis
-        val path: StateFlow<List<Position>> = gameEngine.pathState
-        val walls: StateFlow<List<Position>> = gameEngine.walls
+        val path: StateFlow<List<Position>> = gameEngine.pathFinder.path
+        val walls: StateFlow<List<Position>> = gameEngine.wallProvider.walls
 
         private val _toastMessage = MutableSharedFlow<ToastMessageModel>()
         val toastMessage = _toastMessage.asSharedFlow()
