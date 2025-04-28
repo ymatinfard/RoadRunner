@@ -20,8 +20,9 @@ class GameEngine
         private val playgroundStateManager: PlaygroundStateManager,
         private val pathFinder: BFS,
         private val squareGrid: SquareGrid,
+        private val wallProvider: WallProvider,
     ) {
-        val playgroundState = playgroundStateManager.playGroundState
+        val walls = wallProvider.walls
         val pathState = MutableStateFlow<List<Position>>(emptyList())
 
         var job: Job? = null

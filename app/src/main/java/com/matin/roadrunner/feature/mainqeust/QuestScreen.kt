@@ -38,11 +38,13 @@ fun QuestScreen(viewModel: QuestScreenViewModel = hiltViewModel<QuestScreenViewM
     val taxis by viewModel.texis.collectAsStateWithLifecycle()
     val message by viewModel.toastMessage.collectAsStateWithLifecycle(ToastMessageModel())
     val path by viewModel.path.collectAsStateWithLifecycle()
+    val walls by viewModel.walls.collectAsStateWithLifecycle()
 
     QuestScreenContent(
         taxis = taxis,
         runner = runner,
         path = path,
+        walls = walls,
         onRestartClick = { viewModel.restartGame() },
         onTaxiClick = { viewModel.onTaxiClick(it) },
     )
@@ -53,6 +55,7 @@ fun QuestScreenContent(
     taxis: List<TaxiModel>,
     runner: Position,
     path: List<Position>,
+    walls: List<Position>,
     onRestartClick: () -> Unit,
     onTaxiClick: (TaxiModel) -> Unit,
 ) {
@@ -73,14 +76,22 @@ fun QuestScreenContent(
                 modifier =
                     Modifier
                         .size(cellNumber * cellSize)
-                        .background(MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.medium)
-                        .border(2.dp, MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.medium)
+                        .background(
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            shape = MaterialTheme.shapes.medium,
+                        )
+                        .border(
+                            2.dp,
+                            MaterialTheme.colorScheme.primary,
+                            shape = MaterialTheme.shapes.medium,
+                        )
                         .padding(2.dp),
             ) {
                 Playground(cellNumber, cellSize)
                 Path(path, cellSize)
-                RunnerIcon(runner, cellSize)
-                TaxisIcon(taxis, onTaxiClick, cellSize)
+                Walls(walls, cellSize)
+                Runner(runner, cellSize)
+                Taxis(taxis, onTaxiClick, cellSize)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -97,7 +108,7 @@ fun QuestScreenContent(
 }
 
 @Composable
-fun TaxisIcon(taxis: List<TaxiModel>, onTaxiClick: (TaxiModel) -> Unit, cellSize: Dp) {
+fun Taxis(taxis: List<TaxiModel>, onTaxiClick: (TaxiModel) -> Unit, cellSize: Dp) {
     taxis.forEach { taxi ->
         TaxiIcon(taxi, onTaxiClick = onTaxiClick, cellSize)
     }
@@ -120,7 +131,11 @@ private fun Playground(gridSize: Int, cellSize: Dp) {
                         modifier =
                             Modifier
                                 .size(cellSize)
-                                .border(0.5.dp, MaterialTheme.colorScheme.outlineVariant, shape = MaterialTheme.shapes.small),
+                                .border(
+                                    0.5.dp,
+                                    MaterialTheme.colorScheme.outlineVariant,
+                                    shape = MaterialTheme.shapes.small,
+                                ),
                     )
                 }
             }
@@ -146,7 +161,7 @@ fun PathCell(position: Position, cellSize: Dp) {
 }
 
 @Composable
-fun RunnerIcon(runner: Position, cellSize: Dp) {
+fun Runner(runner: Position, cellSize: Dp) {
     val animatedX by animateDpAsState(targetValue = runner.x * cellSize)
     val animatedY by animateDpAsState(targetValue = runner.y * cellSize)
 
@@ -188,6 +203,22 @@ fun TaxiIcon(taxi: TaxiModel, onTaxiClick: (TaxiModel) -> Unit, cellSize: Dp) {
             contentDescription = "Taxi",
             tint = MaterialTheme.colorScheme.onSecondaryContainer,
             modifier = Modifier.size(28.dp),
+        )
+    }
+}
+
+@Composable
+fun Walls(walls: List<Position>, cellSize: Dp) {
+    for (wall in walls) {
+        Box(
+            modifier =
+                Modifier
+                    .size(cellSize)
+                    .offset(x = wall.x * cellSize, y = wall.y * cellSize)
+                    .background(
+                        MaterialTheme.colorScheme.tertiary.copy(alpha = .7f),
+                        shape = MaterialTheme.shapes.small,
+                    ),
         )
     }
 }

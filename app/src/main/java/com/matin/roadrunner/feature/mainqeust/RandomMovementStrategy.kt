@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 class RandomMovementStrategy
     @Inject
-    constructor(private val gameConfig: GameConfig) : MovementStrategy {
+    constructor(private val gameConfig: GameConfig, private val wallsProvider: WallProvider) : MovementStrategy {
         private val possibleMoves =
             listOf(
                 Position(1, 0), // Right
@@ -27,6 +27,10 @@ class RandomMovementStrategy
 
         private fun isCollision(taxi: Position, runner: Position?): Boolean {
             if (runner == null) return false
-            return taxi.x == runner.x && taxi.y == runner.y
+            return taxi == runner || passable(taxi)
+        }
+
+        fun passable(position: Position): Boolean {
+            return wallsProvider.walls.value.contains(position)
         }
     }
