@@ -17,7 +17,7 @@ class QuestScreenViewModel
     @Inject
     constructor(private val gameEngine: GameEngine, val gameConfig: GameConfig) : ViewModel() {
         val runnerPosition: StateFlow<Position> = gameEngine.runnerController.runner
-        val texis: StateFlow<List<TaxiModel>> = gameEngine.taxiManager.taxis
+        val taxis: StateFlow<List<TaxiModel>> = gameEngine.taxiManager.taxis
         val path: StateFlow<List<Position>> = gameEngine.pathFinder.path
         val walls: StateFlow<List<Position>> = gameEngine.wallProvider.walls
 

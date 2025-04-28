@@ -35,7 +35,7 @@ import com.matin.roadrunner.feature.mainqeust.model.TaxiModel
 @Composable
 fun QuestScreen(viewModel: QuestScreenViewModel = hiltViewModel<QuestScreenViewModel>()) {
     val runner by viewModel.runnerPosition.collectAsStateWithLifecycle()
-    val taxis by viewModel.texis.collectAsStateWithLifecycle()
+    val taxis by viewModel.taxis.collectAsStateWithLifecycle()
     val message by viewModel.toastMessage.collectAsStateWithLifecycle(ToastMessageModel())
     val path by viewModel.path.collectAsStateWithLifecycle()
     val walls by viewModel.walls.collectAsStateWithLifecycle()
