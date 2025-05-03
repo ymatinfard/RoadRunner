@@ -1,4 +1,5 @@
 package com.matin.roadrunner.feature.mainqeust
+
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -153,7 +155,10 @@ fun PathCell(position: Position, cellSize: Dp) {
         modifier =
             Modifier
                 .size(cellSize)
-                .offset(x = animatedX, y = animatedY)
+                .graphicsLayer {
+                    translationX = animatedX.toPx()
+                    translationY = animatedY.toPx()
+                }
                 .background(
                     MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
                     shape = MaterialTheme.shapes.small,
@@ -169,10 +174,20 @@ fun Runner(runner: Position, cellSize: Dp) {
     Box(
         modifier =
             Modifier
-                .offset(x = animatedX, y = animatedY)
+                .graphicsLayer {
+                    translationX = animatedX.toPx()
+                    translationY = animatedY.toPx()
+                }
                 .size(cellSize)
-                .background(MaterialTheme.colorScheme.primaryContainer, shape = MaterialTheme.shapes.small)
-                .border(1.dp, MaterialTheme.colorScheme.primary, shape = MaterialTheme.shapes.small),
+                .background(
+                    MaterialTheme.colorScheme.primaryContainer,
+                    shape = MaterialTheme.shapes.small,
+                )
+                .border(
+                    1.dp,
+                    MaterialTheme.colorScheme.primary,
+                    shape = MaterialTheme.shapes.small,
+                ),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
@@ -193,11 +208,21 @@ fun TaxiIcon(taxi: TaxiModel, onTaxiClick: (TaxiModel) -> Unit, cellSize: Dp) {
         contentAlignment = Alignment.Center,
         modifier =
             Modifier
-                .offset(x = animatedX, y = animatedY)
+                .graphicsLayer {
+                    translationX = animatedX.toPx()
+                    translationY = animatedY.toPx()
+                }
                 .size(cellSize)
                 .clickable { onTaxiClick(taxi) }
-                .background(MaterialTheme.colorScheme.secondaryContainer, shape = MaterialTheme.shapes.small)
-                .border(1.dp, MaterialTheme.colorScheme.secondary, shape = MaterialTheme.shapes.small),
+                .background(
+                    MaterialTheme.colorScheme.secondaryContainer,
+                    shape = MaterialTheme.shapes.small,
+                )
+                .border(
+                    1.dp,
+                    MaterialTheme.colorScheme.secondary,
+                    shape = MaterialTheme.shapes.small,
+                ),
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_taxi),
@@ -215,7 +240,10 @@ fun Walls(walls: List<Position>, cellSize: Dp) {
             modifier =
                 Modifier
                     .size(cellSize)
-                    .offset(x = wall.x * cellSize, y = wall.y * cellSize)
+                    .graphicsLayer {
+                        translationX = wall.x * cellSize.toPx()
+                        translationY = wall.y * cellSize.toPx()
+                    }
                     .background(
                         MaterialTheme.colorScheme.tertiary.copy(alpha = .7f),
                         shape = MaterialTheme.shapes.small,

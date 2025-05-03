@@ -10,11 +10,11 @@ class SquareGrid
     constructor(private val gc: GameConfig, private val wallsProvider: WallProvider) {
         private val directions = listOf(Position(1, 0), Position(0, 1), Position(-1, 0), Position(0, -1))
 
-        fun inBounds(position: Position): Boolean {
+        private fun inBounds(position: Position): Boolean {
             return position.x in 0 until gc.cellCount && position.y in 0 until gc.cellCount
         }
 
-        fun passable(position: Position): Boolean {
+        private fun passable(position: Position): Boolean {
             return wallsProvider.walls.value.contains(position).not()
         }
 
