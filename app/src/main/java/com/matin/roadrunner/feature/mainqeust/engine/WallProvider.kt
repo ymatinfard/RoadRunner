@@ -11,7 +11,7 @@ import javax.inject.Singleton
 class WallProvider
     @Inject
     constructor() {
-        var _walls = MutableStateFlow<List<Position>>(emptyList())
+        private val _walls = MutableStateFlow<List<Position>>(emptyList())
         val walls = _walls.asStateFlow()
 
         init {

@@ -2,12 +2,15 @@ package com.matin.roadrunner.feature.mainqeust.search
 
 import com.matin.roadrunner.core.common.Position
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.util.LinkedList
 import java.util.Queue
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class ShortestPathFinder
     @Inject
     constructor() {

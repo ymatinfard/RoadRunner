@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
@@ -20,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -36,17 +36,14 @@ import com.matin.roadrunner.feature.mainqeust.model.TaxiModel
 
 @Composable
 fun QuestScreen(viewModel: QuestScreenViewModel = hiltViewModel<QuestScreenViewModel>()) {
-    val runner by viewModel.runnerPosition.collectAsStateWithLifecycle()
-    val taxis by viewModel.taxis.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val message by viewModel.toastMessage.collectAsStateWithLifecycle(ToastMessageModel())
-    val path by viewModel.path.collectAsStateWithLifecycle()
-    val walls by viewModel.walls.collectAsStateWithLifecycle()
 
     QuestScreenContent(
-        taxis = taxis,
-        runner = runner,
-        path = path,
-        walls = walls,
+        taxis = uiState.taxis,
+        runner = uiState.runner,
+        path = uiState.path,
+        walls = uiState.walls,
         gameConfig = viewModel.gameConfig,
         onRestartClick = { viewModel.restartGame() },
         onTaxiClick = { viewModel.onTaxiClick(it) },
@@ -71,32 +68,14 @@ fun QuestScreenContent(
                 .padding(16.dp),
         contentAlignment = Alignment.TopCenter,
     ) {
-        val screeWidth = maxWidth
-        val cellCount = gameConfig.cellCount
-        val cellSize = screeWidth / cellCount
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Box(
-                modifier =
-                    Modifier
-                        .size(cellCount * cellSize)
-                        .background(
-                            MaterialTheme.colorScheme.surfaceVariant,
-                            shape = MaterialTheme.shapes.medium,
-                        )
-                        .border(
-                            2.dp,
-                            MaterialTheme.colorScheme.primary,
-                            shape = MaterialTheme.shapes.medium,
-                        )
-                        .padding(2.dp),
-            ) {
-                Playground(cellCount, cellSize)
-                Path(path, cellSize)
-                Walls(walls, cellSize)
-                Runner(runner, cellSize)
-                Taxis(taxis, onTaxiClick, cellSize)
+        val screenWidth = maxWidth
+        val cellSize =
+            remember(screenWidth, gameConfig.cellCount) {
+                screenWidth / gameConfig.cellCount
             }
-
+        val gridSize = remember(cellSize) { gameConfig.cellCount * cellSize }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            GameBoard(gridSize, gameConfig.cellCount, cellSize, path, walls, runner, taxis, onTaxiClick)
             Spacer(modifier = Modifier.height(24.dp))
             Text("Path Length: ${path.size}", style = MaterialTheme.typography.labelLarge)
             Button(
@@ -107,6 +86,40 @@ fun QuestScreenContent(
                 Text("Restart Journey", style = MaterialTheme.typography.labelLarge)
             }
         }
+    }
+}
+
+@Composable
+private fun GameBoard(
+    gridSize: Dp,
+    cellCount: Int,
+    cellSize: Dp,
+    path: List<Position>,
+    walls: List<Position>,
+    runner: Position,
+    taxis: List<TaxiModel>,
+    onTaxiClick: (TaxiModel) -> Unit,
+) {
+    Box(
+        modifier =
+            Modifier
+                .size(gridSize)
+                .background(
+                    MaterialTheme.colorScheme.surfaceVariant,
+                    shape = MaterialTheme.shapes.medium,
+                )
+                .border(
+                    2.dp,
+                    MaterialTheme.colorScheme.primary,
+                    shape = MaterialTheme.shapes.medium,
+                )
+                .padding(2.dp),
+    ) {
+        Playground(cellCount, cellSize)
+        Path(path, cellSize)
+        Walls(walls, cellSize)
+        Runner(runner, cellSize)
+        Taxis(taxis, onTaxiClick, cellSize)
     }
 }
 
